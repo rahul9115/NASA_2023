@@ -15,7 +15,7 @@ nltk.download("omw-1.4")
 nltk.download("punkt")
 nltk.download("stopwords")
 stops=set(stopwords.words("english"))
-
+words=[]
 def clean_content(sentence):
     sentence=re.sub(r'\<[^<>]*\>','',sentence)
     sentence=re.sub(r'^\W+|\W+$',' ',sentence)
@@ -41,66 +41,42 @@ def process_sentences(cleaned_content):
             
               stem=l.lemmatize(word)
               word_list.append(str(stem))
+              words.append(str(stem))
     str1=' '.join(word_list)
     text=contractions.fix(str1)
     
+    
 
     return text
-# with open("output.pickle","rb") as f:
-#     data=pickle.load(f)
-# for i,j in data.items():
-#     pd.DataFrame()
-final_conclusion_summary={}
-def text_rank_conclusion_summary(id,final_cleaned_data1):
-    
-    
-    extracted_text = '. '.join(final_cleaned_data1)
-    def textrank(corpus, ratio=0.2):    
-        if type(corpus) is str:        
-            corpus = [corpus]    
-            lst_summaries = [gensim.summarization.summarize(txt,  
-                            ratio=ratio) for txt in corpus]    
-        return lst_summaries
-    val=textrank(extracted_text)
-    print(len(val[0].split(".")))
-    summary=str(val[0])
 
-    with open(f"{id}_conclusion.txt","w") as f:
-        f.write(str(summary))
-    with open(f"{id}_conclusion.txt","r") as f:
-        l=[]
-        d={}
-        
-        for i in f.readlines():
-            d[i]=d.get(i,0)+1
-        final_summary=' '.join(d.keys())
 
-    final_conclusion_summary.update({id:final_summary})
+def read(id):
+    data=""
+    with pdfplumber.open(f'C:\\Users\\sudha\\Downloads\\NASA Space Apps Challenge\\pdf\\{id}.pdf') as pdf:
+            l=len(pdf.pages)  
+            print(l)
+            text=[]
+            word_count=0
+            for i in range(l):
+                extracted_page =pdf.pages[i] 
+                extracted_text = extracted_page.extract_text()
+                
+                
+                text.append(extracted_text)
+            extracted_text='. '.join(text)
+            final_cleaned_data2=[]
+            words_list=[]
+            
+            for sentence in extracted_text.split("."):
+                
+                sentence=clean_content(sentence)
+            
+                sentence=process_sentences(sentence)
+                
+                final_cleaned_data2.append(sentence)
 
-with pdfplumber.open(f'C:\\Users\\sudha\\Downloads\\NASA Space Apps Challenge\\pdf\\19710021280.pdf') as pdf:
-        l=len(pdf.pages)  
-        print(l)
-        text=[]
-        word_count=0
-        for i in range(l):
-            extracted_page =pdf.pages[i] 
-            extracted_text = extracted_page.extract_text()
-            
-            
-            text.append(extracted_text)
-        extracted_text='. '.join(text)
-        final_cleaned_data2=[]
-        words_list=[]
-        id="19710021280"
-        for sentence in extracted_text.split("."):
-            
-            sentence=clean_content(sentence)
-        
-            sentence=process_sentences(sentence)
-            
-            final_cleaned_data2.append(sentence)
-            with open(f"{id}_clean.txt","w") as f:
-                f.write(". ".join(final_cleaned_data2))
+                data=". ".join(final_cleaned_data2)
+    return data
         
 
 
