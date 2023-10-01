@@ -76,7 +76,7 @@ def read(id):
                 final_cleaned_data2.append(sentence)
 
                 data=". ".join(final_cleaned_data2)
-    return data
+    return data,extracted_text
         
 
 
